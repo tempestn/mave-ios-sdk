@@ -12,9 +12,9 @@
 #import "MAVEUserData.h"
 #import "MAVEReferringData.h"
 #import "MAVEInvitePageChooser.h"
+#import "MAVERemoteConfiguration.h"
 #import "MAVERemoteConfigurationInvitePageChoice.h"
 #import "MAVEAPIInterface.h"
-#import "MAVERemoteObjectBuilder.h"
 #import "MAVECustomSharePageViewController.h"
 #import "MAVEABSyncManager.h"
 #import "MAVEInviteSender.h"
@@ -27,12 +27,11 @@
 @property (nonatomic, strong) MAVEABSyncManager *addressBookSyncManager;
 @property (nonatomic, strong) MAVEInvitePageChooser *invitePageChooser;
 @property (nonatomic, strong) MAVEInviteSender *inviteSender;
-@property (nonatomic, strong) MAVERemoteObjectBuilder *remoteConfigurationBuilder;
+@property (nonatomic, strong) MAVERemoteConfiguration *remoteConfiguration;
 @property (nonatomic, strong) MAVERemoteObjectBuilder *shareTokenBuilder;
 @property (nonatomic, strong) MAVERemoteObjectBuilder *suggestedInvitesBuilder;
 @property (nonatomic, strong) MAVERemoteObjectBuilder *referringDataBuilder;
 
-@property (nonatomic, copy) NSString *appId;
 @property (nonatomic, copy) NSString *appDeviceID;
 @property (nonatomic, assign) BOOL isInitialAppLaunch;
 @property (nonatomic, copy) NSString *inviteContext;
@@ -47,7 +46,7 @@
 @property (nonatomic, assign) CGFloat debugSuggestedInvitesDelaySeconds;
 
 
-+ (void)setupSharedInstanceWithApplicationID:(NSString *)applicationID;
++ (void)setupSharedInstance;
 + (instancetype)sharedInstance;
 
 // Methods intended for external use, to access referring data & suggested invites

@@ -31,7 +31,7 @@
 - (void)setUp {
     [super setUp];
     [MaveSDK resetSharedInstanceForTesting];
-    [MaveSDK setupSharedInstanceWithApplicationID:@"foo123"];
+    [MaveSDK setupSharedInstance];
 }
 
 - (void)tearDown {
@@ -570,22 +570,13 @@
     MAVERemoteConfiguration *remoteConfig = [[MAVERemoteConfiguration alloc] init];
     remoteConfig.contactsInvitePage = [[MAVERemoteConfigurationContactsInvitePage alloc] init];
 
-    // Setup mock, test when enabled NO
-    id configBuilderMock = OCMPartialMock([MaveSDK sharedInstance].remoteConfigurationBuilder);
-    OCMExpect([configBuilderMock createObjectSynchronousWithTimeout:0]).andReturn(remoteConfig);
-    remoteConfig.contactsInvitePage.enabled = NO;
+    // Test when enabled NO
+    [MaveSDK sharedInstance].remoteConfiguration.contactsInvitePage.enabled = NO;
     XCTAssertFalse([chooser isContactsInvitePageEnabledServerSide]);
 
-    OCMVerifyAll(configBuilderMock);
-    [configBuilderMock stopMocking];
-
-    // Reset mock, test when enabled YES
-    configBuilderMock = OCMPartialMock([MaveSDK sharedInstance].remoteConfigurationBuilder);
-    remoteConfig.contactsInvitePage.enabled = YES;
-    OCMExpect([configBuilderMock createObjectSynchronousWithTimeout:0]).andReturn(remoteConfig);
+    // Test when enabled YES
+    [MaveSDK sharedInstance].remoteConfiguration.contactsInvitePage.enabled = YES;
     XCTAssertTrue([chooser isContactsInvitePageEnabledServerSide]);
-
-    OCMVerifyAll(configBuilderMock);
 }
 
 #pragma mark - Navigation controller setup logic
@@ -653,7 +644,7 @@
 
 - (void)testStyleNavigationController {
     // Uses display options from the singleton
-    [MaveSDK setupSharedInstanceWithApplicationID:@"appid1"];
+    [MaveSDK setupSharedInstance];
     MAVEDisplayOptions *displayOpts = [MAVEDisplayOptionsFactory generateDisplayOptions];
     [MaveSDK sharedInstance].displayOptions = displayOpts;
 

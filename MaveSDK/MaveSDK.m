@@ -30,10 +30,8 @@
 //
 // Init and handling shared instance & needed data
 //
-- (instancetype)initWithAppId:(NSString *)appId {
+- (instancetype)initCustom {
     if (self = [self init]) {
-        _appId = appId;
-
         _isInitialAppLaunch = ![MAVEIDUtils isAppDeviceIDStoredToDefaults];
         _appDeviceID = [MAVEIDUtils loadOrCreateNewAppDeviceID];
 
@@ -42,6 +40,7 @@
         _APIInterface = [[MAVEAPIInterface alloc] initWithBaseURL:apiBaseURL];
         _addressBookSyncManager = [[MAVEABSyncManager alloc] init];
         _inviteSender = [[MAVEInviteSender alloc] init];
+        _remoteConfiguration = [[MAVERemoteConfiguration alloc] initWithDictionary:[MAVERemoteConfiguration defaultJSONData]];
     }
     return self;
 }
@@ -49,14 +48,13 @@
 static MaveSDK *sharedInstance = nil;
 static dispatch_once_t sharedInstanceonceToken;
 
-+ (void)setupSharedInstanceWithApplicationID:(NSString *)applicationID {
++ (void)setupSharedInstance {
     dispatch_once(&sharedInstanceonceToken, ^{
-        sharedInstance = [[self alloc] initWithAppId:applicationID];
+        sharedInstance = [[self alloc] initCustom];
 
         sharedInstance.referringDataBuilder = [MAVEReferringData remoteBuilderNoPreFetch];
         [sharedInstance.APIInterface trackAppOpenFetchingReferringDataWithPromise:sharedInstance.referringDataBuilder.promise];
 
-        sharedInstance.remoteConfigurationBuilder = [MAVERemoteConfiguration remoteBuilder];
         sharedInstance.suggestedInvitesBuilder = [MAVESuggestedInvites remoteBuilder];
 
 
@@ -88,10 +86,7 @@ static dispatch_once_t sharedInstanceonceToken;
 - (NSError *)validateUserSetup {
     NSInteger errCode = 0;
     NSString *humanError = @"";
-    if (self.appId == nil) {
-        humanError = @"applicationID is nil";
-        errCode = MAVEValidationErrorApplicationIDNotSetCode;
-    } else if (self.userData == nil) {
+    if (self.userData == nil) {
         humanError = @"identifyUser not called";
         errCode = MAVEValidationErrorUserIdentifyNeverCalledCode;
     } else if (self.userData.userID == nil) {
@@ -110,18 +105,7 @@ static dispatch_once_t sharedInstanceonceToken;
 }
 
 - (BOOL)isSetupOK {
-    NSString *errorFormat = @"Issue with MaveSDK setup - %@.";
-    BOOL ok = YES;
-    if (!self.appId) {
-        MAVEErrorLog(errorFormat, @"applicationID is nil");
-        ok = NO;
-    }
-    return ok;
-}
-
-- (MAVERemoteConfiguration *)remoteConfiguration {
-    id obj = [self.remoteConfigurationBuilder createObjectSynchronousWithTimeout:0];
-    return (MAVERemoteConfiguration *)obj;
+    return YES;
 }
 
 

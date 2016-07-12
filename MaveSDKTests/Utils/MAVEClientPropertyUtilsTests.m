@@ -47,10 +47,7 @@
 - (void)testEncodedContextProperties {
     [MaveSDK sharedInstance].inviteContext = @"foobartestcontext";
     XCTAssertNotNil([MaveSDK sharedInstance].userData.userID);
-    MAVERemoteConfiguration *remoteConfig = [[MAVERemoteConfiguration alloc] initWithDictionary:[MAVERemoteConfiguration defaultJSONData]];
-    id builderMock = OCMClassMock([MAVERemoteObjectBuilder class]);
-    OCMExpect([builderMock object]).andReturn(remoteConfig);
-    [MaveSDK sharedInstance].remoteConfigurationBuilder = builderMock;
+    [MaveSDK sharedInstance].remoteConfiguration = [[MAVERemoteConfiguration alloc] initWithDictionary:[MAVERemoteConfiguration defaultJSONData]];
 
     NSString *base64Properties = [MAVEClientPropertyUtils encodedContextProperties];
     NSDictionary *properties = [MAVEClientPropertyUtils base64DecodeJSONString:base64Properties];
@@ -67,7 +64,6 @@
     XCTAssertEqualObjects([properties objectForKey:@"facebook_share_template_id"], @"0");
     XCTAssertEqualObjects([properties objectForKey:@"twitter_share_template_id"], @"0");
     XCTAssertEqualObjects([properties objectForKey:@"clipboard_share_template_id"], @"0");
-    OCMVerifyAll(builderMock);
 }
 
 - (void)testEncodedContextPropertiesNull {
@@ -75,10 +71,7 @@
     MAVERemoteConfiguration *remoteConfig = [[MAVERemoteConfiguration alloc] init];
     remoteConfig.contactsInvitePage = [[MAVERemoteConfigurationContactsInvitePage alloc] init];
     remoteConfig.contactsInvitePage.templateID = nil;
-
-    id builderMock = OCMClassMock([MAVERemoteObjectBuilder class]);
-    OCMExpect([builderMock object]).andReturn(remoteConfig);
-    [MaveSDK sharedInstance].remoteConfigurationBuilder = builderMock;
+    [MaveSDK sharedInstance].remoteConfiguration = remoteConfig;
 
     NSString *base64Properties = [MAVEClientPropertyUtils encodedContextProperties];
     NSDictionary *properties = [MAVEClientPropertyUtils base64DecodeJSONString:base64Properties];
@@ -158,24 +151,11 @@
     XCTAssertEqualObjects([MAVEClientPropertyUtils urlSafeBase64EncodeAndStripData:nil], @"");
 }
 
-- (void)testUrlSafeBase64EncodeAppIDWhenBigInteger {
-    [MaveSDK sharedInstance].appId = @"202834210204166";
+- (void)testUrlSafeBase64EncodeAppID {
     XCTAssertEqualObjects([MAVEClientPropertyUtils urlSafeBase64ApplicationID],
-                          @"AAC4egUMKgY");
-
-    [MaveSDK sharedInstance].appId = @"0";
-    XCTAssertEqualObjects([MAVEClientPropertyUtils urlSafeBase64ApplicationID],
-                          @"AAAAAAAAAAA");
+                          @"PE5PIEFwcCBJRD4");
 }
 
-- (void)testUrlSafeBase64EncodeAppIDWhenString {
-    [MaveSDK sharedInstance].appId = @"10afdkjl3";
-    XCTAssertEqualObjects([MAVEClientPropertyUtils urlSafeBase64ApplicationID],
-                          @"MTBhZmRramwz");
-    [MaveSDK sharedInstance].appId = @"";
-    XCTAssertEqualObjects([MAVEClientPropertyUtils urlSafeBase64ApplicationID],
-                          @"");
-}
 
 
 ///
